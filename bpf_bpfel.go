@@ -12,17 +12,9 @@ import (
 	"github.com/cilium/ebpf"
 )
 
-type bpfEvent struct {
-	Comm [16]uint8
-	Pid  uint32
-	Tgid uint32
-}
-
 type bpfMapval struct {
-	Timer       struct{ Opaque [2]uint64 }
-	Lock        struct{ Val uint32 }
-	_           [4]byte
-	Initialized uint64
+	Timer    struct{ Opaque [2]uint64 }
+	CbCalled uint64
 }
 
 // loadBpf returns the embedded CollectionSpec for bpf.
@@ -66,14 +58,13 @@ type bpfSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfProgramSpecs struct {
-	SecurityFileFcntl *ebpf.ProgramSpec `ebpf:"security_file_fcntl"`
+	StartTimer *ebpf.ProgramSpec `ebpf:"start_timer"`
 }
 
 // bpfMapSpecs contains maps before they are loaded into the kernel.
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfMapSpecs struct {
-	Events   *ebpf.MapSpec `ebpf:"events"`
 	TimerMap *ebpf.MapSpec `ebpf:"timer_map"`
 }
 
@@ -96,13 +87,11 @@ func (o *bpfObjects) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfMaps struct {
-	Events   *ebpf.Map `ebpf:"events"`
 	TimerMap *ebpf.Map `ebpf:"timer_map"`
 }
 
 func (m *bpfMaps) Close() error {
 	return _BpfClose(
-		m.Events,
 		m.TimerMap,
 	)
 }
@@ -111,12 +100,12 @@ func (m *bpfMaps) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfPrograms struct {
-	SecurityFileFcntl *ebpf.Program `ebpf:"security_file_fcntl"`
+	StartTimer *ebpf.Program `ebpf:"start_timer"`
 }
 
 func (p *bpfPrograms) Close() error {
 	return _BpfClose(
-		p.SecurityFileFcntl,
+		p.StartTimer,
 	)
 }
 

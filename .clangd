@@ -1,0 +1,11 @@
+CompileFlags:
+  Add: [
+    -xc,
+    -emit-llvm,
+    -Wall,
+    -Werror,
+    -Wshadow,
+    -Iheaders,
+    -nostdinc,
+    -std=gnu11
+  ]
