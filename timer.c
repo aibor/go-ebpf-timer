@@ -8,6 +8,7 @@
 #define CLOCK_MONOTONIC 1
 #define CLOCK_BOOTTIME 7
 
+#define ENOENT 0x2
 #define EBUSY 0x10
 
 char __license[] SEC("license") = "Dual MIT/GPL";
@@ -56,7 +57,7 @@ int start_timer(void *ctx) {
   v = bpf_map_lookup_elem(&timer_map, &zero);
   if (!v) {
     bpf_printk("error: no map value");
-    return 1;
+    return -ENOENT;
   }
 
   // initialize the timer

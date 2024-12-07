@@ -55,7 +55,9 @@ func run() error {
 	for range 2 {
 		ret, err := objs.StartTimer.Run(&ebpf.RunOptions{})
 		if err == nil && ret != 0 {
-			err = fmt.Errorf("non-zero exit code: %d", ret)
+			err = syscall.Errno(-ret)
+			// Wait a bit to give tracing some time to print error messages.
+			time.Sleep(10 * time.Millisecond)
 		}
 		if err != nil {
 			return fmt.Errorf("prog run: %w", err)
