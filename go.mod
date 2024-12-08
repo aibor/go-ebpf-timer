@@ -5,7 +5,7 @@ go 1.23
 toolchain go1.23.3
 
 require (
-	github.com/aibor/virtrun v0.13.0
+	github.com/aibor/virtrun v0.13.1
 	github.com/cilium/ebpf v0.16.0
 )
 
