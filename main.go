@@ -22,22 +22,14 @@ func run() error {
 	defer objs.Close()
 
 	// Setup tracing reader.
-	traceFilePath := "/sys/kernel/tracing/trace"
+	tracingDir := "/sys/kernel/tracing/"
 
-	// Mount tracefs if it is not present yet, like in virtrun.
-	if _, err := os.Stat(traceFilePath); errors.Is(err, os.ErrNotExist) {
-		err := syscall.Mount("", "/sys/kernel/tracing", "tracefs", 0, "")
-		if err != nil {
-			return fmt.Errorf("mount tracefs: %w", err)
-		}
-	}
-
-	traceHeader, err := os.ReadFile(traceFilePath)
+	traceHeader, err := os.ReadFile(tracingDir + "trace")
 	if err != nil {
 		return fmt.Errorf("read trace: %w", err)
 	}
 
-	tracePipe, err := os.Open(traceFilePath + "_pipe")
+	tracePipe, err := os.Open(tracingDir + "trace_pipe")
 	if err != nil {
 		return fmt.Errorf("open trace pipe: %w", err)
 	}
